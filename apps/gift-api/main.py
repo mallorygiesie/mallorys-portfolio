@@ -56,7 +56,15 @@ if _DIST.exists():
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa(full_path: str):
-        candidate = (_DIST / full_path).resolve()
-        if candidate.is_relative_to(_DIST) and candidate.is_file():
-            return FileResponse(str(candidate))
-        return FileResponse(str(_DIST / "index.html"))
+        # Serve a Next.js static export. Pages are emitted as files like
+        # `projects/site-risk.html`, so an extensionless route must map to the
+        # matching `.html` (or directory `index.html`) rather than falling
+        # straight back to the home page.
+        for rel in (full_path, f"{full_path}.html", f"{full_path}/index.html"):
+            candidate = (_DIST / rel).resolve()
+            if candidate.is_relative_to(_DIST) and candidate.is_file():
+                return FileResponse(str(candidate))
+        # Unknown path -> Next's own 404 page if present, else the app shell.
+        not_found = _DIST / "404.html"
+        fallback = not_found if not_found.is_file() else _DIST / "index.html"
+        return FileResponse(str(fallback))
