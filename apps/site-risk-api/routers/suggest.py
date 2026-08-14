@@ -6,7 +6,9 @@ from fastapi import APIRouter, Query
 router = APIRouter(prefix="/suggest", tags=["suggest"])
 
 # Photon — open-source, keyless geocoder built for as-you-type autocomplete.
+# The public instance 403s the default httpx user-agent, so send a real one.
 _PHOTON_URL = "https://photon.komoot.io/api/"
+_HEADERS = {"User-Agent": "SiteRisk/1.0 (portfolio demo; contact mallorygiesie@icloud.com)"}
 # Bias results toward the continental US (this app only assesses US addresses).
 _US_CENTER = {"lat": 39.8, "lon": -98.6}
 
@@ -40,7 +42,7 @@ async def suggest(q: str = Query(..., min_length=3, max_length=120)):
         "lon": _US_CENTER["lon"],
     }
     try:
-        async with httpx.AsyncClient(timeout=6.0) as client:
+        async with httpx.AsyncClient(timeout=6.0, headers=_HEADERS) as client:
             resp = await client.get(_PHOTON_URL, params=params)
             resp.raise_for_status()
             data = resp.json()

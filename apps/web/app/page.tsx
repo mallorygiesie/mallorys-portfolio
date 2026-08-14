@@ -6,6 +6,24 @@ const SOCIAL_LINKS = [
   { label: "Email", href: "mailto:mallorygiesie@icloud.com" },
 ];
 
+const ABOUT_PRACTICES = [
+  {
+    label: "Enable",
+    heading: "I look for the off-the-shelf tool first.",
+    body: "Before I build anything custom, I check whether something already solves it, then teach the team to use it, both the things I've built and off-the-shelf tools. Workshops, office hours, and a lot of sitting with someone to get what's in their head down on paper.",
+  },
+  {
+    label: "Engineer",
+    heading: "When it isn't, I build AI applications.",
+    body: "I'm drawn to the gap between “this looks impressive in a demo” and “this works reliably in production,” and closing it is where most of my time goes. Designing the architecture. Deciding what should stay deterministic and what actually needs an LLM. I start from the problem, build inside the stack a team already has, keep the cost defensible, design so people can tell when to trust the output, and hand off something they can maintain without me.",
+  },
+  {
+    label: "Pave",
+    heading: "And I build the road for the next team.",
+    body: "I build out and patternize our deployment and CI/CD in Azure so the next pilot gets stood up in days instead of starting from scratch, and I push leaders to invest in that kind of reusable foundation. The point is that the next team doesn't always have to come find me, and that they can experiment safely because the guardrails are already there.",
+  },
+];
+
 const FEATURED_PROJECTS = [
   {
     slug: "site-risk",
@@ -75,44 +93,48 @@ export default function Home() {
       <div className="border-t border-stone-200" />
 
       {/* About */}
-<section id="about" className="mx-auto max-w-5xl px-6 py-20">
-  <div className="grid grid-cols-1 gap-12 md:grid-cols-[200px_1fr]">
-    <div>
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400">
-        About
-      </h2>
-    </div>
-    <div className="max-w-xl space-y-4 text-stone-600 leading-relaxed">
-      <p>
-        I'm an AI Solutions Engineer, and the best part of my day is a discovery
-        session. Someone brings me a problem, and the first call I usually make is
-        whether we solve it with an engineering solution or an enablement one. The
-        job splits from there.
-      </p>
-      <p>
-        I build AI applications. I'm drawn to the gap between "this looks
-        impressive in a demo" and "this works reliably in production," and closing
-        it is where most of my time goes. Designing the architecture. Deciding what
-        should stay deterministic and what actually needs an LLM. I start from the
-        problem, build inside the stack a team already has, keep the cost
-        defensible, design so people can tell when to trust the output, and hand
-        off something they can maintain without me.
-      </p>
-      <p>
-        I teach teams to use them, both the things I've built and off the shelf
-        tools. Workshops, office hours, and a lot of sitting with someone to get
-        what's in their head down on paper.
-      </p>
-      <p>
-        And I pave. I build out and patternize our deployment and CI/CD in Azure so
-        the next pilot gets stood up in days instead of starting from scratch, and
-        I push leaders to invest in that kind of reusable foundation. The point is
-        that the next team doesn't always have to come find me, and that they can
-        experiment safely because the guardrails are already there.
-      </p>
-    </div>
-  </div>
-</section>
+      <section id="about" className="mx-auto max-w-5xl px-6 py-20">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-[200px_1fr]">
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400">
+              About
+            </h2>
+          </div>
+          <div className="max-w-2xl">
+            <p className="text-lg text-stone-700 leading-relaxed mb-10 text-balance">
+              I'm an AI Solutions Engineer, and the best part of my day is a
+              discovery session. Someone brings me a problem, and the first
+              call I usually make is whether we solve it with an engineering
+              solution or an enablement one. The job splits from there.
+            </p>
+            <div>
+              {ABOUT_PRACTICES.map((practice, i) => (
+                <div
+                  key={practice.label}
+                  className="grid grid-cols-1 gap-3 border-t border-stone-200 py-8 first:pt-0 sm:grid-cols-[140px_1fr] sm:gap-8"
+                >
+                  <div className="flex items-center gap-3 sm:flex-col sm:items-start sm:gap-1">
+                    <span className="text-3xl font-semibold text-stone-200 tabular-nums leading-none">
+                      0{i + 1}
+                    </span>
+                    <span className="text-xs font-semibold uppercase tracking-widest text-stone-400">
+                      {practice.label}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-stone-900 mb-2">
+                      {practice.heading}
+                    </h3>
+                    <p className="text-sm text-stone-500 leading-relaxed">
+                      {practice.body}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Divider */}
       <div className="border-t border-stone-200" />
