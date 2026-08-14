@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from config import settings
-from routers import assess
+from routers import assess, suggest
 
 app = FastAPI(
     title="SiteRisk API",
@@ -21,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(assess.router, prefix="/api")
+app.include_router(suggest.router, prefix="/api")
 
 
 @app.get("/health")

@@ -73,3 +73,27 @@ export async function* streamAssessment(
     }
   }
 }
+
+export interface AddressSuggestion {
+  label: string;
+  lat: number | null;
+  lon: number | null;
+}
+
+/** Address typeahead suggestions from the backend (keyless Photon geocoder). */
+export async function suggestAddresses(q: string): Promise<AddressSuggestion[]> {
+  if (q.trim().length < 3) return [];
+  try {
+    const resp = await fetch(`${BASE}/api/suggest?q=${encodeURIComponent(q.trim())}`);
+    if (!resp.ok) return [];
+    const data = await resp.json();
+    return (data.suggestions as AddressSuggestion[]) ?? [];
+  } catch {
+    return [];
+  }
+}
+
+/** Fire-and-forget wake-up so the first real request isn't cold. */
+export function warmUp(): void {
+  fetch(`${BASE}/health`, { method: "GET", cache: "no-store" }).catch(() => {});
+}

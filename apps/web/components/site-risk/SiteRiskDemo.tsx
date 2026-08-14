@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { streamAssessment, replaySnapshot } from "@/lib/site-risk/client";
+import { streamAssessment, replaySnapshot, warmUp } from "@/lib/site-risk/client";
 import type { RiskDimension, SSEEvent } from "@/types/site-risk";
+import AddressAutocomplete from "./AddressAutocomplete";
 
 const SiteRiskMap = dynamic(() => import("./SiteRiskMap"), { ssr: false });
 
@@ -320,6 +321,11 @@ export default function SiteRiskDemo() {
   const [ndviDate, setNdviDate] = useState<string | null>(null);
   const [isSnapshot, setIsSnapshot] = useState(false);
 
+  // Wake the backend on mount so the first real assessment isn't cold.
+  useEffect(() => {
+    warmUp();
+  }, []);
+
   const reset = () => {
     setStatusText("");
     setSelectedAgents([]);
@@ -376,6 +382,8 @@ export default function SiteRiskDemo() {
     reset();
     setIsSnapshot(false);
     setLoading(true);
+    // Show feedback instantly — before the first server event arrives.
+    setStatusText("Connecting to the assessment engine…");
     try {
       for await (const event of streamAssessment(addr.trim(), ctx.trim())) {
         processEvent(event);
@@ -440,11 +448,11 @@ export default function SiteRiskDemo() {
         {/* Input form */}
         <form onSubmit={handleSubmit} className="space-y-1.5">
           <div className="flex gap-2">
-            <input
-              className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 min-w-0"
-              placeholder="Enter a US address..."
+            <AddressAutocomplete
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200"
+              placeholder="Start typing a US address..."
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              onChange={setAddress}
               disabled={loading}
             />
             <button
@@ -490,10 +498,15 @@ export default function SiteRiskDemo() {
         {(loading || selectedAgents.length > 0) && (
           <div className="rounded-lg bg-white border border-slate-200 p-2.5">
             <div className="flex items-center justify-between mb-2">
-              {statusText && (
-                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400">{statusText}</p>
-              )}
-              <span className={`text-[7.5px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded ${
+              <div className="flex items-center gap-1.5 min-w-0">
+                {loading && (
+                  <span className="w-2.5 h-2.5 rounded-full border-2 border-indigo-200 border-t-indigo-600 animate-spin shrink-0" />
+                )}
+                {statusText && (
+                  <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 truncate">{statusText}</p>
+                )}
+              </div>
+              <span className={`text-[7.5px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded shrink-0 ${
                 isSnapshot ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600"
               }`}>
                 {isSnapshot ? "Recorded" : "Live"}
