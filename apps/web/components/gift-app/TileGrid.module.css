@@ -1,0 +1,125 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.syncArea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.syncMsg {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.syncBtn {
+  font-size: 0.78rem;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.syncBtn:not(:disabled):hover {
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.syncBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  font-size: 0.78rem;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+}
+
+.pill:hover {
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.pillActive {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: #fff;
+}
+
+.pillActive:hover {
+  color: #fff;
+}
+
+.grid {
+  columns: 4;
+  column-gap: 16px;
+}
+
+@media (max-width: 1100px) {
+  .grid { columns: 3; }
+}
+
+@media (max-width: 720px) {
+  .grid { columns: 2; }
+}
+
+@media (max-width: 480px) {
+  .grid { columns: 1; }
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: var(--color-text-secondary);
+  gap: 12px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-text);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  color: #c0392b;
+  font-size: 0.85rem;
+}

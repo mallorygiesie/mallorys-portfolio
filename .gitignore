@@ -1,0 +1,21 @@
+# Node / Next
+node_modules/
+.next/
+out/
+.turbo/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets & local env (never commit)
+.env
+.env.local
+*.local
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

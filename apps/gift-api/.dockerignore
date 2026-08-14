@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+frontend_dist/
+static/
+.venv/
+*.md
