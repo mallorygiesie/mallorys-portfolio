@@ -46,8 +46,7 @@ export default function Home() {
             I turn business problems into shipped agentic solutions.
           </h1>
           <p className="text-xl text-stone-500 leading-relaxed mb-10 text-balance">
-            From client discovery to production rollout — I build RAG pipelines
-            and multi-agent systems, then drive the adoption that makes them stick.
+            From initial discovery to production rollout, I build AI powered systems, then drive the adoption that makes them stick.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
@@ -76,28 +75,44 @@ export default function Home() {
       <div className="border-t border-stone-200" />
 
       {/* About */}
-      <section id="about" className="mx-auto max-w-5xl px-6 py-20">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-[200px_1fr]">
-          <div>
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400">
-              About
-            </h2>
-          </div>
-          <div className="max-w-xl space-y-4 text-stone-600 leading-relaxed">
-            {/* TODO: Replace with your own about text */}
-            <p>
-              I'm an AI Solutions Engineer who runs discovery, builds the system,
-              and stays through rollout. My work spans federal agencies and enterprise
-              clients — tools now in production serving hundreds of users in regulated domains.
-            </p>
-            <p>
-              I'm drawn to the gap between "this model is impressive in a demo"
-              and "this works reliably in production." The engineering that closes it
-              is where I spend most of my time.
-            </p>
-          </div>
-        </div>
-      </section>
+<section id="about" className="mx-auto max-w-5xl px-6 py-20">
+  <div className="grid grid-cols-1 gap-12 md:grid-cols-[200px_1fr]">
+    <div>
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400">
+        About
+      </h2>
+    </div>
+    <div className="max-w-xl space-y-4 text-stone-600 leading-relaxed">
+      <p>
+        I'm an AI Solutions Engineer, and the best part of my day is a discovery
+        session. Someone brings me a problem, and the first call I usually make is
+        whether we solve it with an engineering solution or an enablement one. The
+        job splits from there.
+      </p>
+      <p>
+        I build AI applications. I'm drawn to the gap between "this looks
+        impressive in a demo" and "this works reliably in production," and closing
+        it is where most of my time goes. Designing the architecture. Deciding what
+        should stay deterministic and what actually needs an LLM. I start from the
+        problem, build inside the stack a team already has, keep the cost
+        defensible, design so people can tell when to trust the output, and hand
+        off something they can maintain without me.
+      </p>
+      <p>
+        I teach teams to use them, both the things I've built and off the shelf
+        tools. Workshops, office hours, and a lot of sitting with someone to get
+        what's in their head down on paper.
+      </p>
+      <p>
+        And I pave. I build out and patternize our deployment and CI/CD in Azure so
+        the next pilot gets stood up in days instead of starting from scratch, and
+        I push leaders to invest in that kind of reusable foundation. The point is
+        that the next team doesn't always have to come find me, and that they can
+        experiment safely because the guardrails are already there.
+      </p>
+    </div>
+  </div>
+</section>
 
       {/* Divider */}
       <div className="border-t border-stone-200" />
