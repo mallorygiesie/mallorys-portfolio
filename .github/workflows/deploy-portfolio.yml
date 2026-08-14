@@ -37,16 +37,25 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build image in ACR (bakes NEXT_PUBLIC_* at build time)
+      # Build on the runner with real Docker (not `az acr build`): the App
+      # Insights connection string contains semicolons, which break ACB's
+      # internally generated shell command. docker build handles them cleanly.
+      - name: Log in to ACR
+        run: az acr login --name ${{ env.ACR }}
+
+      - name: Build & push image (bakes NEXT_PUBLIC_* at build time)
+        env:
+          SHA_TAG: ${{ env.ACR }}.azurecr.io/${{ env.IMAGE }}:${{ github.sha }}
+          LATEST_TAG: ${{ env.ACR }}.azurecr.io/${{ env.IMAGE }}:latest
         run: |
-          az acr build \
-            --registry ${{ env.ACR }} \
-            --image ${{ env.IMAGE }}:${{ github.sha }} \
-            --image ${{ env.IMAGE }}:latest \
+          docker build \
             --build-arg NEXT_PUBLIC_GIFT_APP_API="${{ vars.NEXT_PUBLIC_GIFT_APP_API }}" \
             --build-arg NEXT_PUBLIC_SITE_RISK_API="${{ vars.NEXT_PUBLIC_SITE_RISK_API }}" \
             --build-arg NEXT_PUBLIC_APPINSIGHTS_CONNECTION_STRING="${{ secrets.APPINSIGHTS_CONNECTION_STRING }}" \
-            --file Dockerfile .
+            -f Dockerfile \
+            -t "$SHA_TAG" -t "$LATEST_TAG" .
+          docker push "$SHA_TAG"
+          docker push "$LATEST_TAG"
 
       - name: Point App Service at the new image
         run: |
