@@ -45,26 +45,36 @@ npm install && npm run dev
 
 ## Deployment model
 
-| App | Target | Why |
+Everything runs on **Azure App Service** (Linux containers, plan
+`mallorygiesie-plan`, B1 — Basic hosts multiple apps on one plan at no extra
+plan cost). Images are built in ACR `mallorygiesie.azurecr.io`.
+
+| Deployable | App Service | URL |
 | --- | --- | --- |
-| `web` | Azure Static Web Apps (free tier) | static export, no server |
-| `gift-api` | Azure Container App (scale-to-zero) | cheap when idle |
-| `site-risk-api` | Azure Container App (scale-to-zero) | cheap when idle |
+| `web` + `gift-api` (one image) | `mallorygiesie` | https://mallorygiesie.azurewebsites.net |
+| `site-risk-api` | `mallorygiesie-siterisk` | https://mallorygiesie-siterisk.azurewebsites.net |
 
-Each pipeline in `.github/workflows/` triggers only on its own `apps/<name>/**`
-path, builds its image (APIs) or static bundle (web), and updates just that
-target. Nothing else redeploys.
+The portfolio frontend and gift-api ship as a single image (see root
+`Dockerfile`) so the site keeps its one public URL. SiteRisk is a separate
+service the frontend calls cross-origin.
 
-### One-time setup (per environment)
+Each pipeline in `.github/workflows/` triggers only on its own paths, builds
+the image in ACR (`az acr build` — no local Docker), points the App Service at
+the new tag, and restarts it. Nothing else redeploys.
 
-1. Container Apps environment + two apps (`gift-api`, `site-risk-api`) in RG
-   `mallory-website`, images from ACR `mallorygiesie.azurecr.io`.
-2. Static Web App for the portfolio; grab its deploy token.
-3. GitHub repo secrets: `AZURE_CREDENTIALS`, `AZURE_STATIC_WEB_APPS_API_TOKEN`,
-   `APPINSIGHTS_CONNECTION_STRING`; repo vars: `NEXT_PUBLIC_GIFT_APP_API`,
-   `NEXT_PUBLIC_SITE_RISK_API`.
-4. Set each backend's app settings (Azure OpenAI, Search, Raindrop, FIRMS,
-   AirNow) on its Container App — see each app's `.env.example`.
+### One-time setup (done)
+
+- App Services + plan + ACR already exist and are wired up.
+- `site-risk-api` has a managed identity with `Cognitive Services OpenAI User`
+  on the `mallory-ai` OpenAI resource (same as gift-api).
+- GitHub repo **secrets**: `AZURE_CREDENTIALS`, `APPINSIGHTS_CONNECTION_STRING`.
+- GitHub repo **vars**: `NEXT_PUBLIC_GIFT_APP_API`, `NEXT_PUBLIC_SITE_RISK_API`.
+
+### Optional later
+
+- Add `FIRMS_API_KEY` / `AIRNOW_API_KEY` app settings to `mallorygiesie-siterisk`
+  to enable the wildfire-detail and air-quality agents (they degrade gracefully
+  without them).
 
 ## Splitting a project into its own GitHub repo (later)
 

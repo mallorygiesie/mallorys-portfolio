@@ -1,14 +1,16 @@
-name: Deploy site-risk-api
+name: Deploy portfolio (web + gift-api)
 
-# Independent pipeline: only runs when the SiteRisk backend changes.
-# Deploys to the App Service `mallorygiesie-siterisk` (same B1 plan) ->
-# https://mallorygiesie-siterisk.azurewebsites.net
+# The portfolio site and gift-api ship as ONE image to the App Service
+# `mallorygiesie` -> https://mallorygiesie.azurewebsites.net (URL preserved).
+# Triggers on changes to the frontend, the gift backend, or the build itself.
 on:
   push:
     branches: [main]
     paths:
-      - "apps/site-risk-api/**"
-      - ".github/workflows/deploy-site-risk-api.yml"
+      - "apps/web/**"
+      - "apps/gift-api/**"
+      - "Dockerfile"
+      - ".github/workflows/deploy-portfolio.yml"
   workflow_dispatch: {}
 
 # OIDC federated login to Azure — no stored secret.
@@ -18,9 +20,9 @@ permissions:
 
 env:
   ACR: mallorygiesie
-  IMAGE: site-risk-api
+  IMAGE: mallorygiesie          # existing image name the App Service pulls
   RESOURCE_GROUP: mallory-website
-  WEBAPP: mallorygiesie-siterisk
+  WEBAPP: mallorygiesie
 
 jobs:
   build-and-deploy:
@@ -35,13 +37,16 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build image in ACR
+      - name: Build image in ACR (bakes NEXT_PUBLIC_* at build time)
         run: |
           az acr build \
             --registry ${{ env.ACR }} \
             --image ${{ env.IMAGE }}:${{ github.sha }} \
             --image ${{ env.IMAGE }}:latest \
-            apps/site-risk-api
+            --build-arg NEXT_PUBLIC_GIFT_APP_API="${{ vars.NEXT_PUBLIC_GIFT_APP_API }}" \
+            --build-arg NEXT_PUBLIC_SITE_RISK_API="${{ vars.NEXT_PUBLIC_SITE_RISK_API }}" \
+            --build-arg NEXT_PUBLIC_APPINSIGHTS_CONNECTION_STRING="${{ secrets.APPINSIGHTS_CONNECTION_STRING }}" \
+            --file Dockerfile .
 
       - name: Point App Service at the new image
         run: |
