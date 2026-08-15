@@ -9,7 +9,6 @@ import styles from "./ChatBot.module.css";
 const SUGGESTIONS = [
   "What should I get Mallory?",
   "Would Mallory like a ceramic lamp?",
-  "Recommend a face wash Mallory wants",
   "What kind of jewelry does Mallory like?",
   "What home decor style does Mallory prefer?",
 ];
