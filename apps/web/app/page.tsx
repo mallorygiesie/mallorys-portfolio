@@ -61,7 +61,7 @@ export default function Home() {
             AI Solutions Engineer
           </p>
           <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-stone-900 leading-[1.1] text-balance mb-6">
-            I turn business problems into shipped agentic solutions.
+            I build AI systems and processes that make it past the demo.
           </h1>
           <p className="text-xl text-stone-500 leading-relaxed mb-10 text-balance">
             From initial discovery to production rollout, I build AI powered systems, then drive the adoption that makes them stick.
@@ -101,7 +101,7 @@ export default function Home() {
             </h2>
           </div>
           <div className="max-w-2xl">
-            <p className="text-lg text-stone-700 leading-relaxed mb-10 text-balance">
+            <p className="text-2xl font-medium text-stone-800 leading-snug mb-16 text-balance">
               I'm an AI Solutions Engineer, and the best part of my day is a
               discovery session. Someone brings me a problem, and the first
               call I usually make is whether we solve it with an engineering
@@ -111,7 +111,7 @@ export default function Home() {
               {ABOUT_PRACTICES.map((practice, i) => (
                 <div
                   key={practice.label}
-                  className="grid grid-cols-1 gap-3 border-t border-stone-200 py-8 first:pt-0 sm:grid-cols-[140px_1fr] sm:gap-8"
+                  className="grid grid-cols-1 gap-3 border-t border-stone-200 py-8 sm:grid-cols-[140px_1fr] sm:gap-8"
                 >
                   <div className="flex items-center gap-3 sm:flex-col sm:items-start sm:gap-1">
                     <span className="text-3xl font-semibold text-stone-200 tabular-nums leading-none">
