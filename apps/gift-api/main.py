@@ -1,6 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Optional
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -50,21 +51,46 @@ async def health():
 
 
 # Serve the built React frontend in production
-_DIST = Path(__file__).parent / "frontend_dist"
+_DIST = (Path(__file__).parent / "frontend_dist").resolve()
+
+
+def _resolve_static(full_path: str) -> Optional[Path]:
+    """Map a request path onto a file in the Next.js static export.
+
+    Pages are emitted as siblings of their segment directory (`projects.html`
+    next to `projects/`), so an extensionless route has to try the `.html`
+    form before giving up. Returns None if nothing matches.
+    """
+    # Strip surrounding slashes so "" (the root) and "/projects/" both work.
+    # A leading slash would make `_DIST / rel` jump to the filesystem root and
+    # silently escape the export directory.
+    rel_path = full_path.strip("/")
+    if not rel_path:
+        candidates = ("index.html",)
+    else:
+        candidates = (rel_path, f"{rel_path}.html", f"{rel_path}/index.html")
+
+    for rel in candidates:
+        candidate = (_DIST / rel).resolve()
+        if candidate.is_relative_to(_DIST) and candidate.is_file():
+            return candidate
+    return None
+
 
 if _DIST.exists():
 
-    @app.get("/{full_path:path}", include_in_schema=False)
+    # GET *and* HEAD: Next's client router probes routes with HEAD before a
+    # client-side navigation, and FastAPI's @app.get does not imply HEAD the
+    # way Starlette's plain routes do. Answering 405 made the router treat
+    # every page as missing and render its 404 until a full reload.
+    @app.api_route("/{full_path:path}", methods=["GET", "HEAD"], include_in_schema=False)
     async def serve_spa(full_path: str):
-        # Serve a Next.js static export. Pages are emitted as files like
-        # `projects/site-risk.html`, so an extensionless route must map to the
-        # matching `.html` (or directory `index.html`) rather than falling
-        # straight back to the home page.
-        for rel in (full_path, f"{full_path}.html", f"{full_path}/index.html"):
-            candidate = (_DIST / rel).resolve()
-            if candidate.is_relative_to(_DIST) and candidate.is_file():
-                return FileResponse(str(candidate))
+        match = _resolve_static(full_path)
+        if match is not None:
+            return FileResponse(str(match))
         # Unknown path -> Next's own 404 page if present, else the app shell.
+        # Status must really be 404 so crawlers and the router don't treat a
+        # missing route as a valid page.
         not_found = _DIST / "404.html"
         fallback = not_found if not_found.is_file() else _DIST / "index.html"
-        return FileResponse(str(fallback))
+        return FileResponse(str(fallback), status_code=404)
